@@ -46,8 +46,47 @@ def rotate_robot():
 	print("Detected, rotate 90 deg")
 	ser.write('\x83')#safe mode
 	time.sleep(0.2)
-	ser.write('\x92\x00\x5F\xFF\xA1')
+	ser.write('\x92\x00\x5F\xFF\xA1') # rotate clockwise
 	time.sleep(4)
+	
+	angleRotated = 0 # variable to calculated amount of rotation
+	
+#	while angleRotated < 90:
+#		# Send commmand to get angle rotation
+#		ser.write('\x8E\x14') # number 20 = \x14 angle
+#       	time.sleep(.2)
+#		while ser.inWaiting() != 0: # receive message from iRobot, instead of polling maybe use interrupts/callbacks
+#            		response = []
+#            		for i in range(2):
+#                		response.append(hex(ord(ser.read())))
+#            		print(response)
+#			print(int(response[1], 16))
+#			angleRotated = angleRotated + int(response[1], 16)
+#			print(angleRotated)
+#			print("done small movement")
+		
+	
+	
+	
+def forward():
+	ser.write('\x92\x00\x8f\00\8f') #wheel speed of 8f
+        print("continue moving forward")
+	
+	distanceMoved = 0 # variable to calculated amount of rotation
+	
+#	while distanceMoved < 500:# 500mm = 50cm
+#		# Send commmand to get angle rotation
+#		ser.write('\x8E\x13') # number 19 = \x13 angle
+#        	time.sleep(.2)
+#		while ser.inWaiting() != 0: # receive message from iRobot, instead of polling maybe use interrupts/callbacks
+#            		response = []
+#            		for i in range(2):
+#                		response.append(hex(ord(ser.read())))
+#            		print(response)
+#			print(int(response[1], 16))
+#			distanceMoved = distanceMoved + int(response[1], 16)
+#			print(distanceMoved)
+#			print("done small movement")
 
 GPIO.setmode(GPIO.BCM)   #set up GPIO pins
 # GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -67,7 +106,7 @@ print("started")
 time.sleep(0.2)
 ser.write('\x83')#safe mode
 time.sleep(0.2)
-ser.write('\x92\x00\x8f\00\8f') #wheel speed of 8f
+ser.write('\x92\x00\x8f\00\8f') #both wheel speed of 8f
 time.sleep(0.2)
 print("start moving")
 
@@ -85,19 +124,9 @@ try:
                 response.append(hex(ord(ser.read())))
             print(response)
             if (int(response[0], 16) > 0 or int(response[1], 16) > 20): # If close, accurate distance not defined
-                if moving == True:
-                    rotate_robot()
-                    moving = False
-                    detected = True
-                    time.sleep(.2)
-            else: # nothing detected
-                if detected == True:
-                    print("no longer detected")
-                    detected = False    
-        if detected == False and moving == False : # If no object detected and is not currently moving
-            ser.write('\x92\x00\x8f\00\8f') #wheel speed of 8f
-            print("continue moving forward")
-            moving = True
+                rotate_robot()
+                time.sleep(.2)
+            forward()
          
 
 except KeyboardInterrupt:
