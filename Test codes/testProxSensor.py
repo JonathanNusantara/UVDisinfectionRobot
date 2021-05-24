@@ -9,11 +9,11 @@ import binascii
 ser = serial.Serial(port = '/dev/ttyUSB0',baudrate=115200)
 ser.flushOutput()
 
-ser.write('\x80')#start mode
+ser.write(b'\x80')#start mode
 time.sleep(0.2)
-ser.write('\x83')#safe mode
+ser.write(b'\x83')#safe mode
 time.sleep(0.2)
-ser.write('\x92\x00\x00\00\00') #wheel speed of 0
+ser.write(b'\x92\x00\x00\00\00') #wheel speed of 0
 # ser.write('\x92\x00\x60\x00\x60')
 # ser.write('\x92\x00\x60\x00\x60')
 #ser.write('\x8E\x2D') # Get light bumper sensor\
@@ -22,7 +22,7 @@ ser.write('\x92\x00\x00\00\00') #wheel speed of 0
 #print(response)
 #ser.write('\x8E\x0B') # Get light bumper sensor\
 #time.sleep(2)
-sensor = '\x8E\x2D'
+sensor = b'\x8E\x2D'
 
 #response = ser.read()
 #print(response)
@@ -42,7 +42,7 @@ sensor = '\x8E\x2D'
 		# time.sleep(.5)
 
 while True:
-	ser.write('\x8E\x30') #45 = 2D all, 48 = \x30 center left, 49 = \x31 center right
+	ser.write(b'\x8E\x30') #45 = 2D all, 48 = \x30 center left, 49 = \x31 center right
 	time.sleep(.2)
 	while ser.inWaiting() != 0:
 		response = []
