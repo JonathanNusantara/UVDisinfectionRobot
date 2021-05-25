@@ -80,7 +80,7 @@ def rotate90(clockwise): # rotate 90 deg
 def forwardShort():
 	global stopDisinfection
 	startTime = time.time()
-	ser.write(b'\x92\x00\x2f\x00\x2f') #wheel speed of 8f
+	ser.write(b'\x92\x00\x2f\x00\x2f') #wheel speed of 2f
         #print("move forward for some time")
 	
 	move = 1 # Variable on whether we should keep moving forward
@@ -90,7 +90,7 @@ def forwardShort():
 		    move = 0
 		    stopDisinfection = True
 		    
-		elif (time.time() - startTime > 1.5): # If more than 2 sec
+		elif (time.time() - startTime > 1.5): # If more than 1.5 sec
 			stop()
 			move = 0
 			
@@ -101,7 +101,7 @@ def backwardShort():
 	move = 1 # Variable on whether we should keep moving forward
 
 	while (move):
-		if (time.time() - startTime > 2): # If more than 1.5 sec
+		if (time.time() - startTime > 2): # If more than 2 sec
 			stop()
 			move = 0
 
@@ -138,7 +138,7 @@ def forwardUntilSensor(): # move forward until outside table based on ToF
 				move = 0
 
 def lookForLeg(): # Keep moving forward, and stop when leg is detected
-	ser.write(b'\x92\x00\x2f\x00\x35') #wheel speed of 2f
+	ser.write(b'\x92\x00\x2f\x00\x35') #The different in left and right wheel is because of the drift caused by uneven floor
 	print("Looking for leg")
 	move = 1 # Variable on whether we should keep moving forward
 	while (move):
@@ -218,19 +218,7 @@ def getLeftTof(): # Measure using left ToF sensor, return 1 if Roomba is under t
 		return 1
 	else:
 		return 0
-
-#def getProxSensorMid(): # Get middle proximity sensor reading
-#	ser.write(b'\x8E\x30') #45 = 2D all, 48 = \x30 center left, 49 = \x31 center right
-#	time.sleep(.2) # Can I shorten this?
-#	while ser.inWaiting() != 0: # receive message from iRobot, instead of polling maybe use interrupts/callbacks
-#		response = []
-#	    for i in range(2):
- #               response.append(hex(ord(ser.read())))
-#	    if (int(response[0], 16) > 0 or int(response[1], 16) > 20): # Return 1 if there is a close object
-#	        return 1
-#	    else:
-#		return 0
-		    
+	    
 def getProxSensorAll(): # Get all prox sensor reading, return 1 if object detected
 	ser.write(b'\x8E\x2D') #45 = 2D all, 48 = \x30 center left, 49 = \x31 center right
 	time.sleep(.2)
@@ -282,16 +270,8 @@ def armStop():
 	arm.write(b'\x55\x55\x02\x07')
 
 GPIO.setmode(GPIO.BCM)   #set up GPIO pins
-# GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-#GPIO.setup(trigPin, GPIO.OUT, initial = GPIO.LOW)
-#GPIO.setup(echoPin, GPIO.IN)
 
 time.sleep(1)
-
-## add callback event
-# GPIO.add_event_detect(27, GPIO.FALLING, callback=GPIO27_callback, bouncetime=300)
-
-time.sleep(0.2)
 ser.write(b'\x80') #start
 print("started")
 time.sleep(0.2)
@@ -398,28 +378,7 @@ try:
 				# Disinfection will stop if entire table has been disinfected, verified by bump and prox sensors
 			robotMode = 1 # Next state will be robotMode 1 to look for another table
 			lastTableDisinfectTime = time.time()
-			stopDisinfection = False # Reset stopDisinfection value
-	    
-	    
-        # # Reset measurements
-	# ser.write('\x8E\x14')
-	# time.sleep(.2)
-	# while ser.inWaiting() != 0:
-		# ser.read()
-	# forward()
-	# time.sleep(0.1)
-        # ser.write('\x8E\x30') #45 = 2D all, 48 = \x30 center left, 49 = \x31 center right
-        # time.sleep(.2)
-        # while ser.inWaiting() != 0: # receive message from iRobot, instead of polling maybe use interrupts/callbacks
-            # response = []
-            # for i in range(2):
-                # response.append(hex(ord(ser.read())))
-            # #print(response)
-            # if (int(response[0], 16) > 0 or int(response[1], 16) > 20): # If close, accurate distance not defined
-                # rotate90()
-                # time.sleep(.2)
-            # forward()
-         
+			stopDisinfection = False # Reset stopDisinfection value         
 
 except KeyboardInterrupt:
 	GPIO.cleanup() # clean up GPIO on CTRL+C exit
